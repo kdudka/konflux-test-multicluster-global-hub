@@ -370,7 +370,7 @@ spec:
           - description: Tekton task test output.
             name: TEST_OUTPUT
         steps:
-          - image: quay.io/fedora/fedora:40
+          - image: quay.io/fedora/fedora:41
             name: sast-shellcheck
             workingDir: $(workspaces.workspace.path)
             script: |
