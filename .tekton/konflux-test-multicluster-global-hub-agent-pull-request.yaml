@@ -556,6 +556,12 @@ spec:
                   done < <(find $ADDITIONAL_SECRET_TMP -maxdepth 1 -type f -exec basename {} \;)
                 fi
 
+                # install some glue tools developed for OpenScanHub
+                microdnf install -y csdiff
+
+                # instrument all RUN lines in Dockerfile
+                cstrans-df-run --in-place "$dockerfile_path" --verbose echo
+
                 unshare -Uf $UNSHARE_ARGS --keep-caps -r --map-users 1,1,65536 --map-groups 1,1,65536 -w ${SOURCE_CODE_DIR}/$CONTEXT -- buildah build \
                   $VOLUME_MOUNTS \
                   "${BUILDAH_ARGS[@]}" \
