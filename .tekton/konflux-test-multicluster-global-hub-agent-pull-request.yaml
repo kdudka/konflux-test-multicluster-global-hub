@@ -558,6 +558,7 @@ spec:
 
                 # install some glue tools developed for OpenScanHub
                 microdnf install -y cs{diff,gcca,wrap}
+                microdnf install -y csdiff-static --enable-repo=updates-testing
 
                 # pre-create directory for SAST scaning results
                 sast_dir="$(workspaces.source.path)/sast-results"
@@ -568,11 +569,18 @@ spec:
                 tee /usr/bin/cmd-wrap.sh << EOF
                 #!/bin/bash -x
                 env "PATH=/usr/lib64/csgcca:/usr/lib64/cswrap:\$PATH" CSWRAP_TIMEOUT=30 CSWRAP_TIMEOUT_FOR=gcc CSWRAP_CAP_FILE="${sast_dir}/gcc-\$\$.txt" "\$@"
+                EC=\$?
+                src="${sast_dir}/gcc-\$\$.txt"
+                if test -f "\$src"; then
+                  /usr/libexec/csgrep-static --mode=json --event=^warning --embed-context=3 --quiet "\$src" >"${sast_dir}/gcc-\$\$.json"
+                  rm -f "\$src"
+                fi
+                exit \$EC
                 EOF
                 chmod 0755 /usr/bin/cmd-wrap.sh
 
                 # make our (statically linked) wrappers available in the build container
-                for i in /usr/{bin,lib64}/cs{gcca,wrap} /usr/bin/cmd-wrap.sh "$sast_dir"; do
+                for i in /usr/{bin,lib64}/cs{gcca,wrap} /usr/libexec/csgrep-static /usr/bin/cmd-wrap.sh "$sast_dir"; do
                   VOLUME_MOUNTS="${VOLUME_MOUNTS} --volume ${i}:${i}"
                 done
 
