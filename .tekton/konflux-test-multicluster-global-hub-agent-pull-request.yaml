@@ -557,17 +557,17 @@ spec:
                 fi
 
                 # install some glue tools developed for OpenScanHub
-                microdnf install -y cs{diff,wrap}
+                microdnf install -y cs{diff,gcca,wrap}
 
                 # create a wrapper script to instrument RUN lines
                 tee /usr/bin/cmd-wrap.sh << EOF
                 #!/bin/bash -x
-                env "PATH=/usr/lib64/cswrap:\$PATH" "\$@"
+                env "PATH=/usr/lib64/csgcca:/usr/lib64/cswrap:\$PATH" CSWRAP_TIMEOUT=30 CSWRAP_TIMEOUT_FOR=gcc "\$@"
                 EOF
                 chmod 0755 /usr/bin/cmd-wrap.sh
 
                 # make our (statically linked) wrappers available in the build container
-                for i in /usr/{bin,lib64}/cswrap /usr/bin/cmd-wrap.sh; do
+                for i in /usr/{bin,lib64}/cs{gcca,wrap} /usr/bin/cmd-wrap.sh; do
                   VOLUME_MOUNTS="${VOLUME_MOUNTS} --volume ${i}:${i}"
                 done
 
