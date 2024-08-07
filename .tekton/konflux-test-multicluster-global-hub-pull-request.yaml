@@ -387,7 +387,7 @@ spec:
               csgrep --mode=evtstat shellcheck-results.json
               csgrep --mode=sarif shellcheck-results.json > $(workspaces.workspace.path)/hacbs/$(context.task.name)/shellcheck-results.sarif
           - name: upload
-            image: quay.io/konflux-ci/oras:latest@sha256:04cbd5efbcf1a38944b050e3adbc3071218643f6aa92e95d5d25b173574bca5e
+            image: quay.io/konflux-ci/oras:latest@sha256:99737f436051e6d3866eb8a8706463c35abf72c87f05090ff42ff642f6729661
             workingDir: $(workspaces.workspace.path)/hacbs/$(context.task.name)
             env:
               - name: IMAGE_URL
