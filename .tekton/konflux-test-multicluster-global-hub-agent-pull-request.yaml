@@ -596,7 +596,8 @@ spec:
                   -f "$dockerfile_path" -t $IMAGE .
 
                 # read the collected SAST scanning results
-                (set -x && cd "$sast_dir" && csgrep --quiet --event=^warning --remove-duplicates *) || true
+                (set -x && cd "$sast_dir" && csgrep --mode=sarif --event=^warning --remove-duplicates *) \
+                  | tee sast.sarif | csgrep
 
                 container=$(buildah from --pull-never $IMAGE)
                 buildah mount $container | tee /shared/container_path
@@ -821,6 +822,22 @@ spec:
                   readOnly: true
                   subPath: ca-bundle.crt
               workingDir: $(workspaces.source.path)
+            - name: upload-sast-results
+              image: quay.io/konflux-ci/oras:latest@sha256:04cbd5efbcf1a38944b050e3adbc3071218643f6aa92e95d5d25b173574bca5e
+              workingDir: $(workspaces.source.path)
+              script: |
+                #!/bin/bash
+
+                IMAGE_URL=$(cat $(results.IMAGE_URL.path))
+                UPLOAD_FILE=sast.sarif
+                MEDIA_TYPE=application/sarif+json
+
+                echo "Selecting auth"
+                select-oci-auth $IMAGE_URL > $HOME/auth.json
+                echo "Attaching to ${IMAGE_URL} via the OCI 1.1 Referrers API"
+                oras attach --no-tty --registry-config "$HOME/auth.json" --distribution-spec v1.1-referrers-api --artifact-type "${MEDIA_TYPE}" "${IMAGE_URL}" "${UPLOAD_FILE}:${MEDIA_TYPE}"
+                echo "Attaching to ${IMAGE_URL} via the OCI 1.1 Referrers Tag"
+                oras attach --no-tty --registry-config "$HOME/auth.json" --distribution-spec v1.1-referrers-tag --artifact-type "${MEDIA_TYPE}" "${IMAGE_URL}" "${UPLOAD_FILE}:${MEDIA_TYPE}"
           volumes:
             - emptyDir: {}
               name: varlibcontainers
