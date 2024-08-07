@@ -557,10 +557,22 @@ spec:
                 fi
 
                 # install some glue tools developed for OpenScanHub
-                microdnf install -y csdiff
+                microdnf install -y cs{diff,wrap}
+
+                # create a wrapper script to instrument RUN lines
+                tee /usr/bin/cmd-wrap.sh << EOF
+                #!/bin/bash -x
+                env "PATH=/usr/lib64/cswrap:\$PATH" "\$@"
+                EOF
+                chmod 0755 /usr/bin/cmd-wrap.sh
+
+                # make our (statically linked) wrappers available in the build container
+                for i in /usr/{bin,lib64}/cswrap /usr/bin/cmd-wrap.sh; do
+                  VOLUME_MOUNTS="${VOLUME_MOUNTS} --volume ${i}:${i}"
+                done
 
                 # instrument all RUN lines in Dockerfile
-                cstrans-df-run --in-place "$dockerfile_path" --verbose echo
+                cstrans-df-run --in-place "$dockerfile_path" --verbose /usr/bin/cmd-wrap.sh
 
                 unshare -Uf $UNSHARE_ARGS --keep-caps -r --map-users 1,1,65536 --map-groups 1,1,65536 -w ${SOURCE_CODE_DIR}/$CONTEXT -- buildah build \
                   $VOLUME_MOUNTS \
