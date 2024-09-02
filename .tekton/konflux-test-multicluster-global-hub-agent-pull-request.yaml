@@ -522,11 +522,6 @@ spec:
               dnf copr enable copr.devel.redhat.com/@osh/csdiff -y
               dnf install -y csdiff
 
-              if test -z "$(find /opt -name 'license.dat')"; then
-                echo "No license file for Coverity was detected. Exiting..."
-                exit 1
-              fi
-
               # Create configuration file for coverity buildless
               echo -e 'capture:\n   build-command-inference: false' > $SOURCE_CODE_DIR/coverity.yml
               
