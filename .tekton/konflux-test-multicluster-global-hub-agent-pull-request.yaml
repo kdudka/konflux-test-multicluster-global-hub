@@ -439,6 +439,168 @@ spec:
       workspaces:
       - name: workspace
         workspace: workspace
+    - name: sast-coverity-buildless-check
+      runAfter:
+        - build-container
+      when:
+        - input: $(params.skip-checks)
+          operator: in
+          values:
+            - "false"
+      workspaces:
+        - name: workspace
+          workspace: workspace
+      params:
+      - name: image-digest
+        value: $(tasks.build-container.results.IMAGE_DIGEST)
+      - name: image-url
+        value: $(tasks.build-container.results.IMAGE_URL)
+      taskSpec:
+        description: Scans source code for security vulnerabilities, including common issues such as SQL injection, cross-site scripting (XSS), and code injection attacks using Coverity. This scan uses the captureless mode doesn't build the project in order to analyze it.
+        params:
+          - description: Image URL.
+            name: image-url
+            type: string
+            # In a future 0.2 version of the task, drop the default to make this required
+            default: ""
+          - description: Image digest to report findings for.
+            name: image-digest
+            type: string
+            # In a future 0.2 version of the task, drop the default to make this required
+            default: ""
+          - description: Arguments to be appenden to the coverity capture command
+            name: COV_CAPTURE_ARGS
+            type: string
+            default: ""
+          - description: Arguments to be appenden to the coverity analyze command
+            name: COV_ANALYZE_ARGS
+            type: string
+            default: ""
+          - name: COV_LICENSE
+            description: Name of secret which contains the Coverity license
+            default: cov-license
+        volumes:
+          - name: cov-license
+            secret:
+              secretName: $(params.COV_LICENSE)
+              optional: false
+        optional: true
+        results:
+          - description: Tekton task test output.
+            name: TEST_OUTPUT
+        steps:
+          - image: quay.io/redhat-user-workloads/sast-tenant/sast-scanner/coverity@sha256:e19ec5a1d63d0c6b918fe3ef2d0a32221cb71bc938b355006a87c8ccb5cdfc13
+            name: sast-coverity-check
+            env:
+              - name: COV_ANALYZE_ARGS
+                value: $(params.COV_ANALYZE_ARGS)
+              - name: COV_CAPTURE_ARGS
+                value: $(params.COV_CAPTURE_ARGS)
+            script: |
+              #!/usr/bin/env bash
+              set -eo pipefail
+
+              # options passed to csgrep while post-processing the results
+              CSGREP_OPTS=(
+                  --mode=json
+                  --remove-duplicates
+                  --embed-context=3
+              )
+
+              echo 'Starting Coverity buildless scan'
+
+              SOURCE_CODE_DIR=$(workspaces.workspace.path)
+              COVERITY_DIR=/tmp/cov-scan/cov
+              COVERITY_RESULTS_FILE=coverity-buildless-results.js
+              COV_LICENSE_PATH="/etc/secrets/cov-license"
+
+              # Installing Coverity license
+
+              cp /etc/secrets/cov-license /opt/coverity/bin/license.dat
+
+              # Install dependencies
+              dnf copr enable copr.devel.redhat.com/@osh/csdiff -y
+              dnf install -y csdiff
+
+              if test -z "$(find /opt -name 'license.dat')"; then
+                echo "No license file for Coverity was detected. Exiting..."
+                exit 1
+              fi
+
+              # Create configuration file for coverity buildless
+              echo -e 'capture:\n   build-command-inference: false' > $SOURCE_CODE_DIR/coverity.yml
+              
+              # Captureless scan
+              env COV_HOST=konflux HOME=/tmp/cov-scan/home /opt/coverity/bin/coverity capture $COV_CAPTURE_ARGS --project-dir $SOURCE_CODE_DIR --dir $COVERITY_DIR
+              COV_CAPTURE_EXIT_CODE=$?
+              
+              if [[ "$COV_CAPTURE_EXIT_CODE" -eq 0 ]]; then
+                  echo "Coverity capture scan finished succesfully"
+              else
+                  echo "Coverity capture command failed. Exiting..."
+                  exit 1
+              fi
+
+              echo 'Starting Coverity list command'
+              /opt/coverity/bin/coverity list --project-dir $SOURCE_CODE_DIR --dir $COVERITY_DIR
+
+              # Analysis phase
+              /opt/coverity/bin/cov-manage-emit --dir $COVERITY_DIR reset-host-name
+
+              /opt/coverity/bin/cov-analyze $COV_ANALYZE_ARGS --dir=$COVERITY_DIR --enable HARDCODED_CREDENTIALS --security --concurrency --include-java --spotbugs-max-mem=4096
+              COV_ANALYZE_EXIT_CODE=$?
+              
+              if [[ "$COV_ANALYZE_EXIT_CODE" -eq 0 ]]; then
+                echo "Coverity analyze scan finished successfully"
+              else
+                echo "Coverity analyze scan failed. Exiting..."
+                exit 1
+              fi
+
+              /opt/coverity/bin/cov-format-errors --dir=$COVERITY_DIR --json-output-v10 $COVERITY_RESULTS_FILE
+
+              # We parse the results, embed context, remove duplicates and store them in SARIF format.
+              csgrep "${CSGREP_OPTS[@]}" $COVERITY_RESULTS_FILE
+              csgrep --mode=evtstat $COVERITY_RESULTS_FILE
+              csgrep --mode=sarif $COVERITY_RESULTS_FILE > $(workspaces.workspace.path)/hacbs/$(context.task.name)/coverity-buildless-results.sarif
+
+            workingDir: $(workspaces.workspace.path)/hacbs/$(context.task.name)
+            volumeMounts:
+              - name: cov-license
+                mountPath: "/etc/secrets"
+                readOnly: true
+          - name: upload
+            image: quay.io/konflux-ci/oras:latest@sha256:1619b84cea3777387f643d7a1ecde98dd10904439f31607e66530cd2299c7b91
+            workingDir: $(workspaces.workspace.path)/hacbs/$(context.task.name)
+            env:
+              - name: IMAGE_URL
+                value: $(params.image-url)
+              - name: IMAGE_DIGEST
+                value: $(params.image-digest)
+            script: |
+              #!/usr/bin/env bash
+            
+              UPLOAD_FILE=coverity-buildless-results.sarif
+              MEDIA_TYPE=application/sarif+json
+
+               if [ -z "${IMAGE_URL}" ] || [ -z "${IMAGE_DIGEST}"  ]; then
+                 echo 'No image-url or image-digest param provided. Skipping upload.'
+                exit 0;
+              fi
+            
+              if [ ! -f "${UPLOAD_FILE}" ]; then
+                echo "No ${UPLOAD_FILE} exists. Skipping upload."
+                exit 0;
+              fi
+            
+              echo "Selecting auth"
+              select-oci-auth $IMAGE_URL > $HOME/auth.json
+              echo "Attaching to ${IMAGE_URL} via the OCI 1.1 Referrers API"
+              oras attach --no-tty --registry-config "$HOME/auth.json" --distribution-spec v1.1-referrers-api --artifact-type "${MEDIA_TYPE}" "${IMAGE_URL}" "${UPLOAD_FILE}:${MEDIA_TYPE}"
+              echo "Attaching to ${IMAGE_URL} via the OCI 1.1 Referrers Tag"
+              oras attach --no-tty --registry-config "$HOME/auth.json" --distribution-spec v1.1-referrers-tag --artifact-type "${MEDIA_TYPE}" "${IMAGE_URL}" "${UPLOAD_FILE}:${MEDIA_TYPE}"
+        workspaces:
+          - name: workspace
     - name: clamav-scan
       params:
       - name: image-digest
@@ -539,7 +701,8 @@ spec:
         - ReadWriteOnce
         resources:
           requests:
-            storage: 1Gi
+            storage: 4Gi
+            cpu: 4
       status: {}
   - name: git-auth
     secret:
