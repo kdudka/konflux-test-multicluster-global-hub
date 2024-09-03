@@ -489,7 +489,7 @@ spec:
           - description: Tekton task test output.
             name: TEST_OUTPUT
         steps:
-          - image: quay.io/redhat-user-workloads/sast-tenant/sast-scanner/coverity@sha256:e19ec5a1d63d0c6b918fe3ef2d0a32221cb71bc938b355006a87c8ccb5cdfc13
+          - image: quay.io/redhat-user-workloads/sast-tenant/sast-scanner/coverity@sha256:ce98d4a80a2b77cd1b51fb11d563515226331fdf9521daa1b82da5b0a99e8d22
             name: sast-coverity-check
             env:
               - name: COV_ANALYZE_ARGS
