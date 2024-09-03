@@ -505,7 +505,6 @@ spec:
               cp /etc/secrets/cov-license /opt/coverity/bin/license.dat
 
               # Install dependencies
-              dnf copr enable copr.devel.redhat.com/@osh/csdiff -y
               dnf install -y csdiff
 
               # Create configuration file for coverity buildless
