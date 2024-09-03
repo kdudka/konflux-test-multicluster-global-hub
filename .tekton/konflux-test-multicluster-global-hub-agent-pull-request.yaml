@@ -504,12 +504,12 @@ spec:
 
               cp /etc/secrets/cov-license /opt/coverity/bin/license.dat
 
+              # Install a Go compiler
+              dnf install -y golang-bin
+
               # Install dependencies
               dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm
               dnf install -y csdiff
-
-              # Install a Go compiler
-              dnf install -y /usr/bin/go
 
               # Create configuration file for coverity buildless
               echo -e 'capture:\n   build-command-inference: false' > $SOURCE_CODE_DIR/coverity.yml
