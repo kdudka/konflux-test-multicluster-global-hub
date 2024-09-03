@@ -505,6 +505,7 @@ spec:
               cp /etc/secrets/cov-license /opt/coverity/bin/license.dat
 
               # Install dependencies
+              dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm
               dnf install -y csdiff
 
               # Create configuration file for coverity buildless
