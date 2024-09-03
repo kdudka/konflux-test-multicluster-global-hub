@@ -512,7 +512,7 @@ spec:
               dnf install -y /usr/bin/go
 
               # Create configuration file for coverity buildless
-              #echo -e 'capture:\n   build-command-inference: false' > $SOURCE_CODE_DIR/coverity.yml
+              echo -e 'capture:\n   build-command-inference: false' > $SOURCE_CODE_DIR/coverity.yml
               
               # Captureless scan
               env COV_HOST=konflux HOME=/tmp/cov-scan/home /opt/coverity/bin/coverity capture $COV_CAPTURE_ARGS --project-dir $SOURCE_CODE_DIR --dir $COVERITY_DIR
