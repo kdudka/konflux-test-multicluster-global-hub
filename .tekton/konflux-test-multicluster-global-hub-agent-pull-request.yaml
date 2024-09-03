@@ -499,6 +499,7 @@ spec:
             script: |
               #!/usr/bin/env bash
               set -eo pipefail
+              set -x
 
               # options passed to csgrep while post-processing the results
               CSGREP_OPTS=(
