@@ -441,7 +441,7 @@ spec:
         workspace: workspace
     - name: sast-coverity-buildless-check
       runAfter:
-        - build-container
+        - clone-repository
       when:
         - input: $(params.skip-checks)
           operator: in
@@ -450,24 +450,9 @@ spec:
       workspaces:
         - name: workspace
           workspace: workspace
-      params:
-      - name: image-digest
-        value: $(tasks.build-container.results.IMAGE_DIGEST)
-      - name: image-url
-        value: $(tasks.build-container.results.IMAGE_URL)
       taskSpec:
         description: Scans source code for security vulnerabilities, including common issues such as SQL injection, cross-site scripting (XSS), and code injection attacks using Coverity. This scan uses the captureless mode doesn't build the project in order to analyze it.
         params:
-          - description: Image URL.
-            name: image-url
-            type: string
-            # In a future 0.2 version of the task, drop the default to make this required
-            default: ""
-          - description: Image digest to report findings for.
-            name: image-digest
-            type: string
-            # In a future 0.2 version of the task, drop the default to make this required
-            default: ""
           - description: Arguments to be appenden to the coverity capture command
             name: COV_CAPTURE_ARGS
             type: string
@@ -565,36 +550,6 @@ spec:
               - name: cov-license
                 mountPath: "/etc/secrets"
                 readOnly: true
-          - name: upload
-            image: quay.io/konflux-ci/oras:latest@sha256:1619b84cea3777387f643d7a1ecde98dd10904439f31607e66530cd2299c7b91
-            workingDir: $(workspaces.workspace.path)/hacbs/$(context.task.name)
-            env:
-              - name: IMAGE_URL
-                value: $(params.image-url)
-              - name: IMAGE_DIGEST
-                value: $(params.image-digest)
-            script: |
-              #!/usr/bin/env bash
-            
-              UPLOAD_FILE=coverity-buildless-results.sarif
-              MEDIA_TYPE=application/sarif+json
-
-               if [ -z "${IMAGE_URL}" ] || [ -z "${IMAGE_DIGEST}"  ]; then
-                 echo 'No image-url or image-digest param provided. Skipping upload.'
-                exit 0;
-              fi
-            
-              if [ ! -f "${UPLOAD_FILE}" ]; then
-                echo "No ${UPLOAD_FILE} exists. Skipping upload."
-                exit 0;
-              fi
-            
-              echo "Selecting auth"
-              select-oci-auth $IMAGE_URL > $HOME/auth.json
-              echo "Attaching to ${IMAGE_URL} via the OCI 1.1 Referrers API"
-              oras attach --no-tty --registry-config "$HOME/auth.json" --distribution-spec v1.1-referrers-api --artifact-type "${MEDIA_TYPE}" "${IMAGE_URL}" "${UPLOAD_FILE}:${MEDIA_TYPE}"
-              echo "Attaching to ${IMAGE_URL} via the OCI 1.1 Referrers Tag"
-              oras attach --no-tty --registry-config "$HOME/auth.json" --distribution-spec v1.1-referrers-tag --artifact-type "${MEDIA_TYPE}" "${IMAGE_URL}" "${UPLOAD_FILE}:${MEDIA_TYPE}"
         workspaces:
           - name: workspace
     - name: clamav-scan
