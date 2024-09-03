@@ -515,6 +515,8 @@ spec:
               echo -e 'capture:\n   build-command-inference: false' > $SOURCE_CODE_DIR/coverity.yml
               
               # Captureless scan
+              pwd
+              env
               env COV_HOST=konflux HOME=/tmp/cov-scan/home /opt/coverity/bin/coverity capture $COV_CAPTURE_ARGS --project-dir $SOURCE_CODE_DIR --dir $COVERITY_DIR
               COV_CAPTURE_EXIT_CODE=$?
               
