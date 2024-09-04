@@ -494,7 +494,7 @@ spec:
               env
               rm -rf $SOURCE_CODE_DIR/idir
               mv -fv /opt/coverity/bin/{libexec/,}cov-internal-go-fe
-              /opt/coverity/bin/coverity --verbose capture --project-dir $SOURCE_CODE_DIR
+              strace -fe %net -e signal=none /opt/coverity/bin/coverity --verbose capture --project-dir $SOURCE_CODE_DIR
 
               find /root/go -ls
               
