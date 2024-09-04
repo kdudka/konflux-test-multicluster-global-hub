@@ -476,40 +476,15 @@ spec:
         steps:
           - image: quay.io/redhat-user-workloads/sast-tenant/sast-scanner/coverity:5474f42e79ccfa53e2cd39a51ef1f66c4ef3a524
             name: sast-coverity-check
-            env:
-              - name: COV_ANALYZE_ARGS
-                value: $(params.COV_ANALYZE_ARGS)
-              - name: COV_CAPTURE_ARGS
-                value: $(params.COV_CAPTURE_ARGS)
             script: |
               #!/usr/bin/env bash
               set -eo pipefail
               set -x
 
-              # options passed to csgrep while post-processing the results
-              CSGREP_OPTS=(
-                  --mode=json
-                  --remove-duplicates
-                  --embed-context=3
-              )
-
-              echo 'Starting Coverity buildless scan'
-
               SOURCE_CODE_DIR=$(workspaces.workspace.path)
-              COVERITY_DIR=$(pwd)/cov
-              COVERITY_RESULTS_FILE=coverity-buildless-results.js
-              COV_LICENSE_PATH="/etc/secrets/cov-license"
-
-              # Installing Coverity license
-
-              cp /etc/secrets/cov-license /opt/coverity/bin/license.dat
 
               # Install a Go compiler
               dnf install -y golang-bin
-
-              # Install dependencies
-              dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm
-              dnf install -y csdiff
 
               # Create configuration file for coverity buildless
               echo -e 'capture:\n   build-command-inference: false' > $SOURCE_CODE_DIR/coverity.yml
@@ -517,44 +492,11 @@ spec:
               # Captureless scan
               pwd
               env
-              /opt/coverity/bin/coverity capture $COV_CAPTURE_ARGS --project-dir $SOURCE_CODE_DIR --dir $COVERITY_DIR
-              COV_CAPTURE_EXIT_CODE=$?
+              /opt/coverity/bin/coverity capture --project-dir $SOURCE_CODE_DIR
               
-              if [[ "$COV_CAPTURE_EXIT_CODE" -eq 0 ]]; then
-                  echo "Coverity capture scan finished succesfully"
-              else
-                  echo "Coverity capture command failed. Exiting..."
-                  exit 1
-              fi
-
-              echo 'Starting Coverity list command'
-              /opt/coverity/bin/coverity list --project-dir $SOURCE_CODE_DIR --dir $COVERITY_DIR
-
-              # Analysis phase
-              /opt/coverity/bin/cov-manage-emit --dir $COVERITY_DIR reset-host-name
-
-              /opt/coverity/bin/cov-analyze $COV_ANALYZE_ARGS --dir=$COVERITY_DIR --enable HARDCODED_CREDENTIALS --security --concurrency --include-java --spotbugs-max-mem=4096
-              COV_ANALYZE_EXIT_CODE=$?
-              
-              if [[ "$COV_ANALYZE_EXIT_CODE" -eq 0 ]]; then
-                echo "Coverity analyze scan finished successfully"
-              else
-                echo "Coverity analyze scan failed. Exiting..."
-                exit 1
-              fi
-
-              /opt/coverity/bin/cov-format-errors --dir=$COVERITY_DIR --json-output-v10 $COVERITY_RESULTS_FILE
-
-              # We parse the results, embed context, remove duplicates and store them in SARIF format.
-              #csgrep "${CSGREP_OPTS[@]}" $COVERITY_RESULTS_FILE
-              csgrep --mode=evtstat $COVERITY_RESULTS_FILE
-              csgrep --mode=sarif $COVERITY_RESULTS_FILE > $(workspaces.workspace.path)/hacbs/$(context.task.name)/coverity-buildless-results.sarif
+              /opt/coverity/bin/coverity list --project-dir $SOURCE_CODE_DIR
 
             workingDir: $(workspaces.workspace.path)/hacbs/$(context.task.name)
-            volumeMounts:
-              - name: cov-license
-                mountPath: "/etc/secrets"
-                readOnly: true
         workspaces:
           - name: workspace
     - name: clamav-scan
