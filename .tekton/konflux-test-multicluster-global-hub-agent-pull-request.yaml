@@ -494,7 +494,7 @@ spec:
               env
               rm -rf $SOURCE_CODE_DIR/idir
               sed -e 's|/bin/sh|/bin/bash -x|' -i /opt/coverity/bin/cov-internal-go-fe
-              strace -fe %net -e %file -e signal=none -e quiet=exit,attach /opt/coverity/bin/coverity --verbose capture --project-dir $SOURCE_CODE_DIR
+              strace -fe trace=%net,%file -e signal=none -e quiet=exit,attach /opt/coverity/bin/coverity --verbose capture --project-dir $SOURCE_CODE_DIR
 
               find /root/go -ls
               
