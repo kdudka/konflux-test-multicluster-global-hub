@@ -488,10 +488,14 @@ spec:
 
               # Captureless scan
               pwd
+              umask
+              ls -ld ${SOURCE_CODE_DIR}
+              ls -ld ${SOURCE_CODE_DIR}/..
+              ls -l ${SOURCE_CODE_DIR}
               env
               rm -rf $SOURCE_CODE_DIR/idir
               sed -e 's|/bin/sh|/bin/bash -x|' -i /opt/coverity/bin/cov-internal-go-fe
-              export PATH="/opt/coverity/bin:$PATH"
+              #export PATH="/opt/coverity/bin:$PATH"
               strace -fe trace=%net -e signal=none -e quiet=exit,attach coverity --verbose capture --project-dir $SOURCE_CODE_DIR --disable-build-command-inference
 
               find /root/go -ls
