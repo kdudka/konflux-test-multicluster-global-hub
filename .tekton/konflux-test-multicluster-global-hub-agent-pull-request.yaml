@@ -484,7 +484,7 @@ spec:
               SOURCE_CODE_DIR=$(workspaces.workspace.path)
 
               # Install a Go compiler
-              dnf install -y golang-bin
+              dnf install -y golang-bin strace
 
               # Create configuration file for coverity buildless
               echo -e 'capture:\n   build-command-inference: false' > $SOURCE_CODE_DIR/coverity.yml
@@ -492,6 +492,8 @@ spec:
               # Captureless scan
               pwd
               env
+              rm -rf $SOURCE_CODE_DIR/idir
+              mv -fv /opt/coverity/bin/{libexec/,}cov-internal-go-fe
               /opt/coverity/bin/coverity --verbose capture --project-dir $SOURCE_CODE_DIR
 
               find /root/go -ls
