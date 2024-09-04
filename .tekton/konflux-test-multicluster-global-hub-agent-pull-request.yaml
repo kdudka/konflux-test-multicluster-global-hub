@@ -501,6 +501,7 @@ spec:
               free -g
               printf '#!/bin/bash -x\n/opt/coverity/bin/libexec/cov-internal-go-fe --tolerate-internal-packages "$@"\nexit $?\n' > /opt/coverity/bin/cov-internal-go-fe
               export GOROOT=$(go env GOROOT)
+              export GOPROXY=https://proxy.golang.org,direct
               /opt/coverity/bin/coverity --verbose capture --project-dir $SOURCE_CODE_DIR --disable-build-command-inference
 
               df -hT
