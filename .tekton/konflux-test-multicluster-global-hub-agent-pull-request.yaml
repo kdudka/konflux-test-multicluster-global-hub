@@ -488,7 +488,7 @@ spec:
 
               SOURCE_CODE_DIR=$(workspaces.workspace.path)
 
-              dnf install -y strace
+              dnf install -y procps-ng strace
 
               pwd
               umask
@@ -497,6 +497,8 @@ spec:
               ls -ld ${SOURCE_CODE_DIR}/..
               ls -l ${SOURCE_CODE_DIR}
               env
+              ulimit -a
+              free -g
               printf '#!/bin/bash -x\n/opt/coverity/bin/libexec/cov-internal-go-fe "$@"\nexit $?\n' > /opt/coverity/bin/cov-internal-go-fe
               /opt/coverity/bin/coverity --verbose capture --project-dir $SOURCE_CODE_DIR --disable-build-command-inference
 
