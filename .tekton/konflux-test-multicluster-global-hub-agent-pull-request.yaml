@@ -478,9 +478,9 @@ spec:
             name: sast-coverity-check
             resources:
               requests:
-                memory: "8Gi"
-              limits:
                 memory: "16Gi"
+              limits:
+                memory: "32Gi"
             script: |
               #!/usr/bin/env bash
               set -eo pipefail
@@ -499,14 +499,14 @@ spec:
               env
               ulimit -a
               free -g
-              printf '#!/bin/bash -x\nstrace -e %%file -e signal=!SIGURG -s1024 /opt/coverity/bin/libexec/cov-internal-go-fe "$@"\n' > /opt/coverity/bin/cov-internal-go-fe
+              printf '#!/bin/bash -x\nulimit -a\nfree -m\nstrace -e %%file -e signal=!SIGURG -s1024 /opt/coverity/bin/libexec/cov-internal-go-fe "$@"\n' > /opt/coverity/bin/cov-internal-go-fe
               export GOROOT=$(go env GOROOT)
               export GOPROXY=https://proxy.golang.org,direct
               export HOME=/workspace
               /opt/coverity/bin/coverity --verbose capture --project-dir $SOURCE_CODE_DIR --disable-build-command-inference
 
               df -hT
-              find /root/go | sort -V
+              find $HOME/go | sort -V
               
               /opt/coverity/bin/coverity list --project-dir $SOURCE_CODE_DIR
 
