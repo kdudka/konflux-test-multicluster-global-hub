@@ -493,6 +493,9 @@ spec:
               pwd
               env
               /opt/coverity/bin/coverity capture --project-dir $SOURCE_CODE_DIR
+
+              ls -l /root
+              ls -l ~/go
               
               /opt/coverity/bin/coverity list --project-dir $SOURCE_CODE_DIR
 
