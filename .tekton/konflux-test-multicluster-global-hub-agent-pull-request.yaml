@@ -497,6 +497,9 @@ spec:
               rm -rf $SOURCE_CODE_DIR/idir
               sed -e 's|/bin/sh|/bin/bash -x|' -i /opt/coverity/bin/cov-internal-go-fe
               #export PATH="/opt/coverity/bin:$PATH"
+              export https_proxy=http://proxy1.squi-001.prod.eu-central-1.aws.redhat.com:3128
+              export HTTPS_PROXY=http://proxy1.squi-001.prod.eu-central-1.aws.redhat.com:3128
+              export http_proxy=http://proxy1.squi-001.prod.eu-central-1.aws.redhat.com:3128
               strace -fe trace=%net -e signal=none -e quiet=exit,attach /opt/coverity/bin/coverity --verbose capture --project-dir $SOURCE_CODE_DIR --disable-build-command-inference
 
               find /root/go -ls
