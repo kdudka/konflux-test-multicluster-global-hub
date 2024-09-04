@@ -499,10 +499,10 @@ spec:
               env
               ulimit -a
               free -g
-              printf '#!/bin/bash -x\n/opt/coverity/bin/libexec/cov-internal-go-fe "$@"\nexit $?\n' > /opt/coverity/bin/cov-internal-go-fe
+              printf '#!/bin/bash -x\n/opt/coverity/bin/libexec/cov-internal-go-fe "$@" || /opt/coverity/bin/libexec/cov-internal-go-fe "$@"\n' > /opt/coverity/bin/cov-internal-go-fe
               /opt/coverity/bin/coverity --verbose capture --project-dir $SOURCE_CODE_DIR --disable-build-command-inference
 
-              du -sh
+              df -hT
               find /root/go | sort -V
               
               /opt/coverity/bin/coverity list --project-dir $SOURCE_CODE_DIR
