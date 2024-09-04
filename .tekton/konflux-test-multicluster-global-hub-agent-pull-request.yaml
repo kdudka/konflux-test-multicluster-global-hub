@@ -489,6 +489,7 @@ spec:
               # Captureless scan
               pwd
               umask
+              chgrp -R nobody /workspace
               ls -ld ${SOURCE_CODE_DIR}
               ls -ld ${SOURCE_CODE_DIR}/..
               ls -l ${SOURCE_CODE_DIR}
