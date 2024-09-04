@@ -497,7 +497,7 @@ spec:
               ls -ld ${SOURCE_CODE_DIR}/..
               ls -l ${SOURCE_CODE_DIR}
               env
-              printf '#!/bin/bash -x\nstrace -e execve,%%net -f -s1024 -e signal=none -e quiet=exit,attach /opt/coverity/bin/libexec/cov-internal-go-fe "$@"\n' > /opt/coverity/bin/cov-internal-go-fe
+              printf '#!/bin/bash -x\n/opt/coverity/bin/libexec/cov-internal-go-fe "$@"\nexit $?\n' > /opt/coverity/bin/cov-internal-go-fe
               /opt/coverity/bin/coverity --verbose capture --project-dir $SOURCE_CODE_DIR --disable-build-command-inference
 
               find /root/go -ls
