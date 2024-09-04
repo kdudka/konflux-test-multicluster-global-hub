@@ -495,12 +495,12 @@ spec:
               ls -l ${SOURCE_CODE_DIR}
               env
               rm -rf $SOURCE_CODE_DIR/idir
-              sed -e 's|/bin/sh|/bin/bash -x|' -i /opt/coverity/bin/cov-internal-go-fe
-              #export PATH="/opt/coverity/bin:$PATH"
+              printf '#!/bin/bash -x\nstrace -fe trace=%%net -e signal=none -e quiet=exit,attach /opt/coverity/bin/libexec/cov-internal-go-fe "$@"\n' > /opt/coverity/bin/cov-internal-go-fe
               export https_proxy=http://10.60.1.50:3128
               export HTTPS_PROXY=http://10.60.1.50:3128
               export http_proxy=http://10.60.1.50:3128
-              strace -fe trace=%net -e signal=none -e quiet=exit,attach /opt/coverity/bin/coverity --verbose capture --project-dir $SOURCE_CODE_DIR --disable-build-command-inference
+              
+              /opt/coverity/bin/coverity --verbose capture --project-dir $SOURCE_CODE_DIR --disable-build-command-inference
 
               find /root/go -ls
               
