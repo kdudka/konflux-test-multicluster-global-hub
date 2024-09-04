@@ -486,19 +486,17 @@ spec:
               # Install a Go compiler
               dnf install -y golang-bin strace
 
-              # Create configuration file for coverity buildless
-              echo -e 'capture:\n   build-command-inference: false' > $SOURCE_CODE_DIR/coverity.yml
-              
               # Captureless scan
               pwd
               env
               rm -rf $SOURCE_CODE_DIR/idir
               sed -e 's|/bin/sh|/bin/bash -x|' -i /opt/coverity/bin/cov-internal-go-fe
-              strace -fe trace=%net,%file -e signal=none -e quiet=exit,attach /opt/coverity/bin/coverity --verbose capture --project-dir $SOURCE_CODE_DIR
+              export PATH="/opt/coverity/bin:$PATH"
+              strace -fe trace=%net -e signal=none -e quiet=exit,attach coverity --verbose capture --project-dir $SOURCE_CODE_DIR --disable-build-command-inference
 
               find /root/go -ls
               
-              /opt/coverity/bin/coverity list --project-dir $SOURCE_CODE_DIR
+              coverity list --project-dir $SOURCE_CODE_DIR
 
             workingDir: $(workspaces.workspace.path)/hacbs/$(context.task.name)
         workspaces:
