@@ -492,7 +492,7 @@ spec:
               # Captureless scan
               pwd
               env
-              /opt/coverity/bin/coverity capture --project-dir $SOURCE_CODE_DIR
+              /opt/coverity/bin/coverity --verbose capture --project-dir $SOURCE_CODE_DIR
 
               find /root/go -ls
               
