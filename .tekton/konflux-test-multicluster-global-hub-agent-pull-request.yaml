@@ -476,7 +476,7 @@ spec:
         steps:
           - image: quay.io/redhat-user-workloads/sast-tenant/sast-scanner/coverity:5474f42e79ccfa53e2cd39a51ef1f66c4ef3a524
             name: sast-coverity-check
-            resources:
+            computeResources:
               requests:
                 memory: "16Gi"
               limits:
