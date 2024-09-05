@@ -439,6 +439,82 @@ spec:
       workspaces:
       - name: workspace
         workspace: workspace
+    - name: sast-coverity-buildless-check
+      runAfter:
+        - clone-repository
+      when:
+        - input: $(params.skip-checks)
+          operator: in
+          values:
+            - "false"
+      workspaces:
+        - name: workspace
+          workspace: workspace
+      taskSpec:
+        description: Scans source code for security vulnerabilities, including common issues such as SQL injection, cross-site scripting (XSS), and code injection attacks using Coverity. This scan uses the captureless mode doesn't build the project in order to analyze it.
+        params:
+          - description: Arguments to be appenden to the coverity capture command
+            name: COV_CAPTURE_ARGS
+            type: string
+            default: ""
+          - description: Arguments to be appenden to the coverity analyze command
+            name: COV_ANALYZE_ARGS
+            type: string
+            default: ""
+          - name: COV_LICENSE
+            description: Name of secret which contains the Coverity license
+            default: cov-license
+        volumes:
+          - name: cov-license
+            secret:
+              secretName: $(params.COV_LICENSE)
+              optional: false
+        optional: true
+        results:
+          - description: Tekton task test output.
+            name: TEST_OUTPUT
+        steps:
+          - image: quay.io/redhat-user-workloads/sast-tenant/sast-scanner/coverity:5474f42e79ccfa53e2cd39a51ef1f66c4ef3a524
+            name: sast-coverity-check
+            computeResources:
+              requests:
+                memory: "16Gi"
+              limits:
+                memory: "32Gi"
+            securityContext:
+              oomScoreAdj: -1000  # Adjust the OOM score
+            script: |
+              #!/usr/bin/env bash
+              set -eo pipefail
+              set -x
+
+              SOURCE_CODE_DIR=$(workspaces.workspace.path)
+
+              dnf install -y golang-bin procps-ng strace
+
+              pwd
+              umask
+              chgrp -R nobody /workspace
+              ls -ld ${SOURCE_CODE_DIR}
+              ls -ld ${SOURCE_CODE_DIR}/..
+              ls -l ${SOURCE_CODE_DIR}
+              env
+              ulimit -a
+              free -g
+              printf '#!/bin/bash -x\nulimit -a\nfree -m\nstrace -e %%file -e signal=!SIGURG -s1024 /opt/coverity/bin/libexec/cov-internal-go-fe "$@"\n' > /opt/coverity/bin/cov-internal-go-fe
+              export GOROOT=$(go env GOROOT)
+              export GOPROXY=https://proxy.golang.org,direct
+              export HOME=/workspace
+              /opt/coverity/bin/coverity --verbose capture --project-dir $SOURCE_CODE_DIR --disable-build-command-inference
+
+              df -hT
+              find $HOME/go | sort -V
+              
+              /opt/coverity/bin/coverity list --project-dir $SOURCE_CODE_DIR
+
+            workingDir: $(workspaces.workspace.path)/hacbs/$(context.task.name)
+        workspaces:
+          - name: workspace
     - name: clamav-scan
       params:
       - name: image-digest
@@ -539,7 +615,8 @@ spec:
         - ReadWriteOnce
         resources:
           requests:
-            storage: 1Gi
+            storage: 4Gi
+            cpu: 4
       status: {}
   - name: git-auth
     secret:
