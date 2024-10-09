@@ -275,13 +275,13 @@ spec:
       - prefetch-dependencies
       taskRef:
         params:
-        - name: url
-          value: "https://github.com/mmorhun/build-definitions.git"
-        - name: revision
-          value: STONEBLD-2804
-        - name: pathInRepo
-          value: "task/buildah-sast/0.2/kustomization.yaml"
-        resolver: git
+        - name: name
+          value: buildah-sast
+        - name: bundle
+          value: quay.io/kdudka/build-sast-test:tag
+        - name: kind
+          value: task
+        resolver: bundles
       when:
       - input: $(tasks.init.results.build)
         operator: in
