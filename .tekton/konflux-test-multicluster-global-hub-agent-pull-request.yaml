@@ -271,8 +271,10 @@ spec:
         - $(params.build-args[*])
       - name: BUILD_ARGS_FILE
         value: $(params.build-args-file)
+      - name: IMAGE_URL
+        value: $(tasks.build-container.results.IMAGE_URL)
       runAfter:
-      - prefetch-dependencies
+      - build-container
       taskRef:
         params:
         - name: name
