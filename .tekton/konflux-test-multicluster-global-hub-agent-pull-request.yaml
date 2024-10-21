@@ -250,6 +250,31 @@ spec:
       workspaces:
       - name: source
         workspace: workspace
+    - name: sast-unicode-check-oci-ta
+      params:
+      - name: IMAGE_URL
+        value: $(tasks.build-container.results.IMAGE_URL)
+      - name: SOURCE_ARTIFACT
+        value: https://github.com/kdudka/konflux-test-multicluster-global-hub.git
+      runAfter:
+      - build-container
+      taskRef:
+        params:
+        - name: name
+          value: sast-unicode-check-oci-ta
+        - name: bundle
+          value: quay.io/kdudka/sast-unicode-check-oci-ta:test
+        - name: kind
+          value: task
+        resolver: bundles
+      when:
+      - input: $(tasks.init.results.build)
+        operator: in
+        values:
+        - "true"
+      workspaces:
+      - name: source
+        workspace: workspace
     - name: build-source-image
       params:
       - name: BINARY_IMAGE
