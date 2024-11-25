@@ -183,33 +183,33 @@ spec:
         workspace: workspace
       - name: basic-auth
         workspace: git-auth
-    - name: prefetch-dependencies
-      params:
-      - name: input
-        value: $(params.prefetch-input)
-      runAfter:
-      - clone-repository
-      taskRef:
-        params:
-        - name: name
-          value: prefetch-dependencies
-        - name: bundle
-          value: quay.io/konflux-ci/tekton-catalog/task-prefetch-dependencies:0.1@sha256:2bbeb1fa9eaa1b02c56524ff5ccd137a28d59626b7eedc1d3e714b69e4e17ac7
-        - name: kind
-          value: task
-        resolver: bundles
-      when:
-      - input: $(params.prefetch-input)
-        operator: notin
-        values:
-        - ""
-      workspaces:
-      - name: source
-        workspace: workspace
-      - name: git-basic-auth
-        workspace: git-auth
-      - name: netrc
-        workspace: netrc
+#    - name: prefetch-dependencies
+#      params:
+#      - name: input
+#        value: $(params.prefetch-input)
+#      runAfter:
+#      - clone-repository
+#      taskRef:
+#        params:
+#        - name: name
+#          value: prefetch-dependencies
+#        - name: bundle
+#          value: quay.io/konflux-ci/tekton-catalog/task-prefetch-dependencies:0.1@sha256:2bbeb1fa9eaa1b02c56524ff5ccd137a28d59626b7eedc1d3e714b69e4e17ac7
+#        - name: kind
+#          value: task
+#        resolver: bundles
+#      when:
+#      - input: $(params.prefetch-input)
+#        operator: notin
+#        values:
+#        - ""
+#      workspaces:
+#      - name: source
+#        workspace: workspace
+#      - name: git-basic-auth
+#        workspace: git-auth
+#      - name: netrc
+#        workspace: netrc
 #    - name: build-container
 #      params:
 #      - name: IMAGE
