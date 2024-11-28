@@ -273,6 +273,8 @@ spec:
         value: $(params.build-args-file)
       - name: IMAGE_URL
         value: $(tasks.build-container.results.IMAGE_URL)
+      - name: IMP_FINDINGS_ONLY
+        value: "false"
       runAfter:
         - coverity-availability-check
 #      taskRef:
