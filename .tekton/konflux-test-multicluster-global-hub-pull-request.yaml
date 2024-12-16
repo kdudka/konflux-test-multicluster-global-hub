@@ -313,9 +313,6 @@ spec:
         - name: kind
           value: task
         resolver: bundles
-      workspaces:
-      - name: workspace
-        workspace: workspace
     - name: build-source-image
       params:
       - name: BINARY_IMAGE

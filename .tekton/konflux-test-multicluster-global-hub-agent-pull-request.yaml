@@ -280,15 +280,6 @@ spec:
       taskRef:
         params:
         - name: name
-          value: buildah
-        - name: bundle
-          value: quay.io/konflux-ci/tekton-catalog/task-buildah:0.2@sha256:67963bcd91b23ee90f2c4ecb8b7f523c457f6c350df17bc192480dbd085a241d
-        - name: kind
-          value: task
-        resolver: bundles
-      taskRef:
-        params:
-        - name: name
           value: sast-coverity-check
         - name: bundle
           value: quay.io/kdudka/sast-coverity-check:latest
@@ -322,9 +313,6 @@ spec:
         - name: kind
           value: task
         resolver: bundles
-      workspaces:
-      - name: workspace
-        workspace: workspace
     - name: build-source-image
       params:
       - name: BINARY_IMAGE
