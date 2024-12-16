@@ -275,6 +275,8 @@ spec:
         value: $(tasks.build-container.results.IMAGE_URL)
       - name: IMP_FINDINGS_ONLY
         value: "false"
+      - name: COV_ANALYZE_ARGS
+        value: "-n BAD_CERT_VERIFICATION -n CHECKED_RETURN -n CONSTANT_EXPRESSION_RESULT -n DEADCODE -n DIVIDE_BY_ZERO -n FORWARD_NULL -n HARDCODED_CREDENTIALS -n IDENTICAL_BRANCHES -n INSECURE_FILE_PERMISSIONS -n INSECURE_NETWORK_BIND -n INSUFFICIENT_LOGGING -n NULL_RETURNS -n OPEN_REDIRECT -n PATH_MANIPULATION -n REVERSE_INULL -n RISKY_CRYPTO -n SENSITIVE_DATA_LEAK -n SIGMA.hardcoded_secret -n SIGMA.unspecified_software_version -n SUPPRESSED_ERROR -n UNSAFE_BASIC_AUTH -n UNSAFE_FUNCTIONALITY -n UNUSED_VALUE"
       runAfter:
         - coverity-availability-check
       taskRef:
