@@ -272,8 +272,7 @@ spec:
       - name: BUILD_ARGS_FILE
         value: $(params.build-args-file)
       - name: IMAGE_URL
-        #value: $(tasks.build-container.results.IMAGE_URL)
-        value: "XXX"
+        value: $(tasks.build-container.results.IMAGE_URL)
       - name: IMP_FINDINGS_ONLY
         value: "false"
       - name: COV_ANALYZE_ARGS
@@ -305,8 +304,8 @@ spec:
           operator: in
           values: ["false"]
       runAfter:
-        - clone-repository
-        #- build-container
+        #- clone-repository
+        - build-container
       taskRef:
         params:
         - name: name
