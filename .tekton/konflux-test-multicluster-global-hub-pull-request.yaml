@@ -271,7 +271,7 @@ spec:
         - $(params.build-args[*])
       - name: BUILD_ARGS_FILE
         value: $(params.build-args-file)
-      - name: IMAGE_URL
+      - name: image-url
         value: $(tasks.build-container.results.IMAGE_URL)
       - name: IMP_FINDINGS_ONLY
         value: "false"
