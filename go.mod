@@ -13,7 +13,7 @@ require (
 	github.com/crunchydata/postgres-operator v1.3.3-0.20230629151007-94ebcf2df74d
 	github.com/deckarep/golang-set v1.8.0
 	github.com/evanphx/json-patch v5.7.0+incompatible
-	github.com/fergusstrange/embedded-postgres v1.17.0
+	github.com/fergusstrange/embedded-postgres v1.30.0
 	github.com/gin-gonic/gin v1.9.1
 	github.com/go-co-op/gocron v1.23.0
 	github.com/go-logr/logr v1.4.1
@@ -34,7 +34,7 @@ require (
 	github.com/stolostron/cluster-lifecycle-api v0.0.0-20230222063645-5b18b26381ff
 	github.com/stolostron/klusterlet-addon-controller v0.0.0-20230528112800-a466a2368df4
 	github.com/stolostron/multiclusterhub-operator v0.0.0-20230829141355-4ad378ab367f
-	github.com/stretchr/testify v1.9.0
+	github.com/stretchr/testify v1.10.0
 	go.uber.org/zap v1.26.0
 	gopkg.in/ini.v1 v1.67.0
 	gopkg.in/yaml.v2 v2.4.0
