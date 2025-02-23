@@ -61,6 +61,7 @@ require (
 )
 
 require (
+	github.com/IBM/sarama v1.40.1 // indirect
 	github.com/google/certificate-transparency-go v1.1.7 // indirect
 	github.com/jackc/puddle/v2 v2.2.1 // indirect
 	github.com/jmoiron/sqlx v1.3.5 // indirect
@@ -83,7 +84,7 @@ require (
 	github.com/bytedance/sonic v1.9.1 // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/chenzhuoyu/base64x v0.0.0-20221115062448-fe3a3abad311 // indirect
-	github.com/cloudevents/sdk-go/protocol/kafka_sarama/v2 v2.13.0
+	github.com/cloudevents/sdk-go/protocol/kafka_sarama/v2 v2.15.2
 	github.com/cyphar/filepath-securejoin v0.2.4 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/eapache/go-resiliency v1.3.0 // indirect
