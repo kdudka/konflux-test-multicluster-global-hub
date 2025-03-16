@@ -41,15 +41,15 @@ require (
 	gorm.io/datatypes v1.2.0
 	gorm.io/driver/postgres v1.5.2
 	gorm.io/gorm v1.25.4
-	k8s.io/api v0.30.1
+	k8s.io/api v0.30.2
 	k8s.io/apiextensions-apiserver v0.30.1
-	k8s.io/apimachinery v0.30.1
-	k8s.io/client-go v0.30.1
+	k8s.io/apimachinery v0.30.2
+	k8s.io/client-go v0.30.2
 	k8s.io/klog v1.0.0
 	k8s.io/kube-aggregator v0.30.1
 	k8s.io/utils v0.0.0-20240102154912-e7106e64919e
 	open-cluster-management.io/addon-framework v0.9.0
-	open-cluster-management.io/api v0.13.0
+	open-cluster-management.io/api v0.16.1
 	open-cluster-management.io/governance-policy-propagator v0.11.1-0.20230815182526-b4ee1b24b1d0
 	open-cluster-management.io/multicloud-operators-channel v0.11.0
 	open-cluster-management.io/multicloud-operators-subscription v0.11.0
@@ -208,7 +208,7 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	gorm.io/driver/mysql v1.4.7 // indirect
 	k8s.io/apiserver v0.30.1 // indirect
-	k8s.io/component-base v0.30.1 // indirect
+	k8s.io/component-base v0.30.2 // indirect
 	k8s.io/klog/v2 v2.120.1
 	k8s.io/kube-openapi v0.0.0-20240228011516-70dd3763d340 // indirect
 	open-cluster-management.io/sdk-go v0.13.0 // indirect
