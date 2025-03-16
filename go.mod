@@ -15,7 +15,7 @@ require (
 	github.com/evanphx/json-patch v5.7.0+incompatible
 	github.com/fergusstrange/embedded-postgres v1.17.0
 	github.com/gin-gonic/gin v1.9.1
-	github.com/go-co-op/gocron v1.23.0
+	github.com/go-co-op/gocron/v2 v2.16.1
 	github.com/go-logr/logr v1.4.1
 	github.com/gonvenience/ytbx v1.4.4
 	github.com/google/uuid v1.6.0
@@ -34,7 +34,7 @@ require (
 	github.com/stolostron/cluster-lifecycle-api v0.0.0-20230222063645-5b18b26381ff
 	github.com/stolostron/klusterlet-addon-controller v0.0.0-20230528112800-a466a2368df4
 	github.com/stolostron/multiclusterhub-operator v0.0.0-20230829141355-4ad378ab367f
-	github.com/stretchr/testify v1.9.0
+	github.com/stretchr/testify v1.10.0
 	go.uber.org/zap v1.26.0
 	gopkg.in/ini.v1 v1.67.0
 	gopkg.in/yaml.v2 v2.4.0
@@ -64,6 +64,7 @@ require (
 	github.com/google/certificate-transparency-go v1.1.7 // indirect
 	github.com/jackc/puddle/v2 v2.2.1 // indirect
 	github.com/jmoiron/sqlx v1.3.5 // indirect
+	github.com/jonboulle/clockwork v0.5.0 // indirect
 	github.com/pelletier/go-toml v1.9.5 // indirect
 	github.com/weppos/publicsuffix-go v0.30.0 // indirect
 	github.com/zmap/zcrypto v0.0.0-20230310154051-c8b263fd8300 // indirect
