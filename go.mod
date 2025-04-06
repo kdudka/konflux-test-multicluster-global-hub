@@ -1,6 +1,8 @@
 module github.com/stolostron/multicluster-global-hub
 
-go 1.22.4
+go 1.23.0
+
+toolchain go1.23.8
 
 require (
 	github.com/RedHatInsights/strimzi-client-go v0.34.2
@@ -188,7 +190,7 @@ require (
 	github.com/xlab/treeprint v1.2.0 // indirect
 	go.starlark.net v0.0.0-20230525235612-a134d8f9ddca // indirect
 	go.uber.org/multierr v1.11.0 // indirect
-	golang.org/x/arch v0.3.0 // indirect
+	golang.org/x/arch v0.16.0 // indirect
 	golang.org/x/crypto v0.25.0 // indirect
 	golang.org/x/exp v0.0.0-20240112132812-db7319d0e0e3 // indirect
 	golang.org/x/net v0.27.0 // indirect
