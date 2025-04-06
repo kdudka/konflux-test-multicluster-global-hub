@@ -1,6 +1,8 @@
 module github.com/stolostron/multicluster-global-hub
 
-go 1.22.4
+go 1.23
+
+toolchain go1.23.8
 
 require (
 	github.com/RedHatInsights/strimzi-client-go v0.34.2
@@ -212,7 +214,7 @@ require (
 	k8s.io/klog/v2 v2.120.1
 	k8s.io/kube-openapi v0.0.0-20240228011516-70dd3763d340 // indirect
 	open-cluster-management.io/sdk-go v0.13.0 // indirect
-	sigs.k8s.io/json v0.0.0-20221116044647-bc3834ca7abd // indirect
+	sigs.k8s.io/json v0.0.0-20241014173422-cfa47c3a1cc8 // indirect
 	sigs.k8s.io/kube-storage-version-migrator v0.0.6-0.20230721195810-5c8923c5ff96 // indirect
 	sigs.k8s.io/structured-merge-diff/v4 v4.4.1 // indirect
 )
