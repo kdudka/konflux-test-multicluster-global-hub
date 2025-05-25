@@ -32,7 +32,7 @@ require (
 	github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring v0.63.0
 	github.com/spf13/pflag v1.0.5
 	github.com/stolostron/cluster-lifecycle-api v0.0.0-20230222063645-5b18b26381ff
-	github.com/stolostron/klusterlet-addon-controller v0.0.0-20230528112800-a466a2368df4
+	github.com/stolostron/klusterlet-addon-controller 3bb46e6dc228
 	github.com/stolostron/multiclusterhub-operator v0.0.0-20230829141355-4ad378ab367f
 	github.com/stretchr/testify v1.9.0
 	go.uber.org/zap v1.26.0
